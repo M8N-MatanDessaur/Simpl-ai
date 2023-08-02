@@ -2,9 +2,13 @@ const axios = require('axios');
 
 exports.handler = async function(event, context) {
   try {
+    const conversationHistory = event.queryStringParameters.history; // get conversation history from request parameters
+    const userInput = event.queryStringParameters.input; // get user input from request parameters
+    const prompt = `${conversationHistory}\nUser: ${userInput}\nAI:`; // format the prompt including conversation history and user input
+
     const response = await axios.post("https://api.openai.com/v1/engines/text-davinci-003/completions", 
       {
-        prompt: `respond to the user input. Return only the response text. The input is ${event.queryStringParameters.input}}`,
+        prompt: prompt,
         temperature: 0.7,
         max_tokens: 1000,
       },

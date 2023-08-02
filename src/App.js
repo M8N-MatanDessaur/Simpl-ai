@@ -20,10 +20,13 @@ export default function App() {
     event.preventDefault(); // prevent page refresh
     // Add user message to conversation
     setConversation((prevConversation) => [...prevConversation, { by: 'user', text: userInput }]);
-
+  
+    // Convert the conversation array to a string in the required format
+    const conversationHistory = conversation.map(message => `${message.by === 'ai' ? 'AI' : 'User'}: ${message.text}`).join('\n');
+  
     try {
-      const response = await axios.get(`.netlify/functions/aichat?input=${userInput}`);
-
+      const response = await axios.get(`.netlify/functions/aichat?input=${userInput}&history=${encodeURIComponent(conversationHistory)}`);
+  
       // Check if data exists and add AI message to conversation
       if (response.data && response.data.output) {
         const aiMessage = response.data.output;
@@ -38,6 +41,7 @@ export default function App() {
       setUserInput('');
     }
   };
+  
 
   return (
     <ViewContainer>
