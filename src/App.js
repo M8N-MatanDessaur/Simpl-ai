@@ -9,6 +9,10 @@ export default function App() {
   // Create a reference to the TextView
   const textViewRef = useRef(null);
 
+  navigator.virtualKeyboard.overlaysContent = true;
+  navigator.virtualKeyboard.fixed = true;
+  
+
   // Scroll to the bottom of the TextView every time the conversation changes
   useEffect(() => {
     if (lastMessageRef.current) {
