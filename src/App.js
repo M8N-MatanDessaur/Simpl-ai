@@ -80,7 +80,7 @@ export default function App() {
 
 const ViewContainer = styled.div`
   width: 100%;
-  height: 100dvh;
+  height: 100%;
   display: flex;
   flex-direction: column;
   align-items: center;
