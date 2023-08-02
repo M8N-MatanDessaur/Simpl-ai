@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import styled from "styled-components";
 import axios from "axios";
 
@@ -6,12 +6,20 @@ export default function App() {
   const [userInput, setUserInput] = useState(''); // for storing the user's input
   const [conversation, setConversation] = useState([{ by: 'ai', text: 'Hello, I am an AI chatbot. I am here to help you with your questions. Ask me anything.' }]); // to store the conversation history
 
+  // Create a reference to the TextView
+  const textViewRef = useRef(null);
+
+  // Scroll to the bottom of the TextView every time the conversation changes
+  useEffect(() => {
+    if (textViewRef.current) {
+      textViewRef.current.scrollIntoView({ behavior: "smooth", block: "end", inline: "nearest" });
+    }
+  }, [conversation]);
+
   const handleSend = async (event) => {
     event.preventDefault(); // prevent page refresh
     // Add user message to conversation
     setConversation((prevConversation) => [...prevConversation, { by: 'user', text: userInput }]);
-    // Clear user input immediately after sending
-    setUserInput('');
 
     try {
       const response = await axios.get(`.netlify/functions/aichat?input=${userInput}`);
@@ -23,16 +31,18 @@ export default function App() {
       } else {
         setConversation((prevConversation) => [...prevConversation, { by: 'ai', text: 'Oops... Something happened, try again' }]);
       }
+      // Clear user input
+      setUserInput('');
     } catch (error) {
       console.error("Error:", error);
+      setUserInput('');
     }
   };
-
 
   return (
     <ViewContainer>
       <ChatContainer>
-        <TextView>
+        <TextView ref={textViewRef}>
         {conversation.map((message, index) => message.by === 'ai' ? (
           <AiText key={index}>{message.text}</AiText>
         ) : (
@@ -51,7 +61,6 @@ export default function App() {
     </ViewContainer>
   );
 };
-
 
 const ViewContainer = styled.div`
   width: 100%;
