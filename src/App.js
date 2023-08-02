@@ -4,7 +4,7 @@ import axios from "axios";
 
 export default function App() {
   const [userInput, setUserInput] = useState(''); // for storing the user's input
-  const [conversation, setConversation] = useState([{ by: 'ai', text: 'Hello, I am an AI chatbot. I am here to help you with your questions. Ask me anything.' }]); // to store the conversation history
+  const [conversation, setConversation] = useState([{ by: 'ai', text: 'Hello, I am an simplAI. I am here to help you with your questions. Ask me anything.' }]); // to store the conversation history
   const lastMessageRef = useRef(null);
   // Create a reference to the TextView
   const textViewRef = useRef(null);
