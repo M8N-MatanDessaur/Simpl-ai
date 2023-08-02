@@ -1,4 +1,4 @@
-import React, {useEffect, useState} from "react";
+import React, { useEffect, useState } from "react";
 import styled from "styled-components";
 import axios from "axios";
 
@@ -9,10 +9,10 @@ export default function App() {
   const handleSend = async () => {
     // Add user message to conversation
     setConversation((prevConversation) => [...prevConversation, { by: 'user', text: userInput }]);
-  
-    try{
+
+    try {
       const response = await axios.get(`.netlify/functions/aichat?input=${userInput}`);
-  
+
       // Check if data exists and add AI message to conversation
       if (response.data && response.data.output) {
         const aiMessage = response.data.output;
@@ -146,7 +146,8 @@ const SendButton = styled.button`
 `;
 
 const AiText = styled.div`
-  width: 60%;
+  width: max-content;
+  max-width: 60%;
   border-radius: 10px;
   padding: 5px 10px;
   background-color: #6c41c380;
@@ -161,7 +162,8 @@ const AiText = styled.div`
 `;
 
 const UserText = styled.div`
-  width: 60%;
+width: max-content;
+max-width: 60%;
   border-radius: 10px;
   padding: 5px 10px;
   background-color: #FFFFFF20;
