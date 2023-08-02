@@ -6,7 +6,7 @@ exports.handler = async function(event, context) {
     const userInput = event.queryStringParameters.input; // get user input from request parameters
     const prompt = `${conversationHistory}\nUser: ${userInput}\nAI:`; // format the prompt including conversation history and user input
 
-    const response = await axios.post("https://api.openai.com/v1/engines/gpt-3.5-turbo/completions", 
+    const response = await axios.post("https://api.openai.com/v1/engines/gpt-3/completions", 
       {
         prompt: prompt,
         temperature: 0.7,
