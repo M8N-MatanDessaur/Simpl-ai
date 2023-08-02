@@ -7,21 +7,24 @@ export default function App() {
   const [conversation, setConversation] = useState([{ by: 'ai', text: 'Hello, I am an AI chatbot. I am here to help you with your questions. Ask me anything.' }]); // to store the conversation history
 
   const handleSend = async () => {
-    setConversation([...conversation, { by: 'user', text: userInput }]);
+    // Add user message to conversation
+    setConversation((prevConversation) => [...prevConversation, { by: 'user', text: userInput }]);
+  
     try{
-    const response = await axios.get(`.netlify/functions/aichat?input=${userInput}`);
-    const aiMessage = response.data.output;
-    const data = await response.json();
-    if (data && data.mainText) {
-      setConversation([...conversation, { by: 'ai', text: aiMessage }]);
+      const response = await axios.get(`.netlify/functions/aichat?input=${userInput}`);
+  
+      // Check if data exists and add AI message to conversation
+      if (response.data && response.data.output) {
+        const aiMessage = response.data.output;
+        setConversation((prevConversation) => [...prevConversation, { by: 'ai', text: aiMessage }]);
+      } else {
+        setConversation((prevConversation) => [...prevConversation, { by: 'ai', text: 'Oops... Something happened, try again' }]);
+      }
+      // Clear user input
       setUserInput('');
-    } else {
-      setConversation("Oups... Something happened, try again");
-      setUserInput('');
+    } catch (error) {
+      console.error("Error:", error);
     }
-  } catch (error) {
-    console.error("Error:", error);
-  }
   };
 
   return (
@@ -35,7 +38,7 @@ export default function App() {
         <UserInput>
           <UserInputText value={userInput} onChange={(e) => setUserInput(e.target.value)} />
           <SendButton onClick={handleSend}>
-            <svg fill="none" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+            <svg fill="none" strokeLinecap="round" strokeLinejoin="round" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
               <path d="M9.912 12H4L2.023 4.135A.662.662 0 0 1 2 3.995c-.022-.721.772-1.221 1.46-.891L22 12 3.46 20.896c-.68.327-1.464-.159-1.46-.867a.66.66 0 0 1 .033-.186L3.5 15"></path>
             </svg>
           </SendButton>
