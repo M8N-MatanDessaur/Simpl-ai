@@ -1,13 +1,14 @@
 import React, { useEffect, useRef, useState } from "react";
 import styled from "styled-components";
 import axios from "axios";
+import { BeatLoader } from 'react-spinners';
 
 export default function App() {
   const [userInput, setUserInput] = useState(''); // for storing the user's input
   const [conversation, setConversation] = useState([{ by: 'ai', text: 'Hello, I am an simplAI. I am here to help you with your questions. Ask me anything.' }]); // to store the conversation history
   const lastMessageRef = useRef(null);
-  // Create a reference to the TextView
   const textViewRef = useRef(null);
+  const [loading, setLoading] = useState(false);
 
   // Scroll to the bottom of the TextView every time the conversation changes
   useEffect(() => {
@@ -20,13 +21,13 @@ export default function App() {
     event.preventDefault(); // prevent page refresh
     // Add user message to conversation
     setConversation((prevConversation) => [...prevConversation, { by: 'user', text: userInput }]);
-
+    // Clear user input
+    setUserInput('');
     // Convert the conversation array to a string in the required format
     const conversationHistory = conversation.map(message => `${message.by === 'ai' ? 'AI' : 'User'}: ${message.text}`).join('\n');
-
+    setLoading(true);
     try {
       const response = await axios.get(`.netlify/functions/aichat?input=${userInput}&history=${encodeURIComponent(conversationHistory)}`);
-
       // Check if data exists and add AI message to conversation
       if (response.data && response.data.output) {
         const aiMessage = response.data.output;
@@ -34,49 +35,55 @@ export default function App() {
       } else {
         setConversation((prevConversation) => [...prevConversation, { by: 'ai', text: 'Oops... Something happened, try again' }]);
       }
-      // Clear user input
-      setUserInput('');
+      setLoading(false);
     } catch (error) {
       console.error("Error:", error);
       setConversation((prevConversation) => [...prevConversation, { by: 'ai', text: 'Oops... Something happened, try again' }]);
-      setUserInput('');
+      setLoading(false); 
     }
   };
 
 
   return (
     <ViewContainer>
-      <ChatContainer>
-        <TextView>
-          {conversation.map((message, index) => (
-            <MessageRef key={index} ref={index === conversation.length - 1 ? lastMessageRef : null}>
-              {message.by === 'ai' ? (
-                <AiText><p>{message.text}</p></AiText>
-              ) : (
-                <UserText><p>{message.text}</p></UserText>
-              )}
-            </MessageRef>
-          ))}
-        </TextView>
-        <UserInput onSubmit={handleSend}>
-          <UserInputText
-            value={userInput}
-            onChange={(e) => setUserInput(e.target.value)}
-            onFocus={(e) => {
-              const { scrollX, scrollY } = window;
-              e.target.onblur = () => window.scrollTo(scrollX, scrollY);
-            }}
+    <ChatContainer>
+      <TextView>
+        {conversation.map((message, index) => (
+          <MessageRef key={index} ref={index === conversation.length - 1 ? lastMessageRef : null}>
+            {message.by === 'ai' ? (
+              <AiText><p>{message.text}</p></AiText>
+            ) : (
+              <UserText><p>{message.text}</p></UserText>
+            )}
+          </MessageRef>
+        ))}
+        {loading && 
+          <BeatLoader 
+            color={"#442f70"} 
+            loading={loading} 
+            size={8} 
           />
-          <SendButton type="submit">
-            <svg fill="none" strokeLinecap="round" strokeLinejoin="round" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-              <path d="M9.912 12H4L2.023 4.135A.662.662 0 0 1 2 3.995c-.022-.721.772-1.221 1.46-.891L22 12 3.46 20.896c-.68.327-1.464-.159-1.46-.867a.66.66 0 0 1 .033-.186L3.5 15"></path>
-            </svg>
-          </SendButton>
-        </UserInput>
-      </ChatContainer>
-    </ViewContainer>
-  );
-};
+        }
+      </TextView>
+      <UserInput onSubmit={handleSend}>
+        <UserInputText
+          value={userInput}
+          onChange={(e) => setUserInput(e.target.value)}
+          onFocus={(e) => {
+            const { scrollX, scrollY } = window;
+            e.target.onblur = () => window.scrollTo(scrollX, scrollY);
+          }}
+        />
+        <SendButton type="submit">
+          <svg fill="none" strokeLinecap="round" strokeLinejoin="round" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+            <path d="M9.912 12H4L2.023 4.135A.662.662 0 0 1 2 3.995c-.022-.721.772-1.221 1.46-.891L22 12 3.46 20.896c-.68.327-1.464-.159-1.46-.867a.66.66 0 0 1 .033-.186L3.5 15"></path>
+          </svg>
+        </SendButton>
+      </UserInput>
+    </ChatContainer>
+  </ViewContainer>
+);
+}
 
 const ViewContainer = styled.div`
   width: 100%;
