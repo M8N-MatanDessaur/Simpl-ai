@@ -3,45 +3,45 @@ import styled from "styled-components";
 import axios from "axios";
 
 export default function App() {
-  const [userInput, setUserInput] = useState('');
-  const [conversation, setConversation] = useState([{ by: 'ai', text: 'Hello, I am an simplAI. I am here to help you with your questions. Ask me anything.' }]);
+  const [userInput, setUserInput] = useState(''); // for storing the user's input
+  const [conversation, setConversation] = useState([{ by: 'ai', text: 'Hello, I am an simplAI. I am here to help you with your questions. Ask me anything.' }]); // to store the conversation history
   const lastMessageRef = useRef(null);
+  // Create a reference to the TextView
   const textViewRef = useRef(null);
-  const [viewportHeight, setViewportHeight] = useState(window.innerHeight);
 
+  navigator.virtualKeyboard.onchange = () => {
+    if (textViewRef.current) {
+      textViewRef.current.scrollIntoView({ behavior: "smooth", block: "end", inline: "nearest" });
+    }
+  };	
+
+
+  // Scroll to the bottom of the TextView every time the conversation changes
   useEffect(() => {
     if (lastMessageRef.current) {
       lastMessageRef.current.scrollIntoView({ behavior: "smooth", block: "end", inline: "nearest" });
     }
   }, [conversation]);
 
-  // Detect when the virtual keyboard is opened or closed
-  useEffect(() => {
-    const handleResize = () => {
-      setViewportHeight(window.innerHeight);
-    };
-
-    window.addEventListener('resize', handleResize);
-
-    return () => {
-      window.removeEventListener('resize', handleResize);
-    };
-  }, []);
-
   const handleSend = async (event) => {
-    event.preventDefault();
+    event.preventDefault(); // prevent page refresh
+    // Add user message to conversation
     setConversation((prevConversation) => [...prevConversation, { by: 'user', text: userInput }]);
+
+    // Convert the conversation array to a string in the required format
     const conversationHistory = conversation.map(message => `${message.by === 'ai' ? 'AI' : 'User'}: ${message.text}`).join('\n');
-    
+
     try {
       const response = await axios.get(`.netlify/functions/aichat?input=${userInput}&history=${encodeURIComponent(conversationHistory)}`);
 
+      // Check if data exists and add AI message to conversation
       if (response.data && response.data.output) {
         const aiMessage = response.data.output;
         setConversation((prevConversation) => [...prevConversation, { by: 'ai', text: aiMessage }]);
       } else {
         setConversation((prevConversation) => [...prevConversation, { by: 'ai', text: 'Oops... Something happened, try again' }]);
       }
+      // Clear user input
       setUserInput('');
     } catch (error) {
       console.error("Error:", error);
