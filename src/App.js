@@ -10,6 +10,8 @@ export default function App() {
     event.preventDefault(); // prevent page refresh
     // Add user message to conversation
     setConversation((prevConversation) => [...prevConversation, { by: 'user', text: userInput }]);
+    // Clear user input immediately after sending
+    setUserInput('');
 
     try {
       const response = await axios.get(`.netlify/functions/aichat?input=${userInput}`);
@@ -21,13 +23,11 @@ export default function App() {
       } else {
         setConversation((prevConversation) => [...prevConversation, { by: 'ai', text: 'Oops... Something happened, try again' }]);
       }
-      // Clear user input
-      setUserInput('');
     } catch (error) {
       console.error("Error:", error);
-      setUserInput('');
     }
   };
+
 
   return (
     <ViewContainer>
