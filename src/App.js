@@ -32,13 +32,14 @@ export default function App() {
   return (
     <ViewContainer>
       <ChatContainer>
+        <TextView>
         {conversation.map((message, index) => message.by === 'ai' ? (
           <AiText key={index}>{message.text}</AiText>
         ) : (
           <UserText key={index}>{message.text}</UserText>
         ))}
-        <Form onSubmit={handleSend}>
-          <UserInput>
+        </TextView>
+          <UserInput onSubmit={handleSend}>
             <UserInputText value={userInput} onChange={(e) => setUserInput(e.target.value)} />
             <SendButton type="submit">
               <svg fill="none" strokeLinecap="round" strokeLinejoin="round" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
@@ -46,7 +47,6 @@ export default function App() {
               </svg>
             </SendButton>
           </UserInput>
-        </Form>
       </ChatContainer>
     </ViewContainer>
   );
@@ -70,7 +70,6 @@ const ChatContainer = styled.div`
   height: 90%;
   border: 1px solid #FFFFFF30;
   border-radius: 10px;
-  overflow: auto;
 
   &::-webkit-scrollbar {
     width: 10px;
@@ -95,16 +94,28 @@ const ChatContainer = styled.div`
   align-items: center;
   gap: 10px;
   padding: 35px;
+
+  @media (max-width: 560px) {
+    width: 100%;
+    height: 100%;
+    border: none;
+    border-radius: 0;
+    padding: 25px;
+  }
+    
 `;
 
-const Form = styled.form`
-position: absolute;
-  bottom: 0;
+const TextView = styled.div`
   width: 100%;
-  height: 100%;
+  height: 90%;
+  overflow-y: scroll;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
 `;
 
-const UserInput = styled.div`
+const UserInput = styled.form`
   position: absolute;
   bottom: 0;
   width: 100%;
@@ -170,8 +181,8 @@ const SendButton = styled.button`
   }
 
   & svg {
-    width: 50%;
-    height: 50%;
+    width: 40%;
+    height: 40%;
     stroke: #FFFFFF60;
   }
 `;
