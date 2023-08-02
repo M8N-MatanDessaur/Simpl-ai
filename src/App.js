@@ -13,7 +13,17 @@ export default function App() {
     if (textViewRef.current) {
       textViewRef.current.scrollIntoView({ behavior: "smooth", block: "end", inline: "nearest" });
     }
-  };	
+  };
+  navigator.virtualKeyboard.onhide = () => {
+    if (textViewRef.current) {
+      textViewRef.current.scrollIntoView({ behavior: "smooth", block: "end", inline: "nearest" });
+    }
+  };
+  navigator.virtualKeyboard.onshow = () => {
+    if (textViewRef.current) {
+      textViewRef.current.scrollIntoView({ behavior: "smooth", block: "end", inline: "nearest" });
+    }
+  };
 
 
   // Scroll to the bottom of the TextView every time the conversation changes
