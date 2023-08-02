@@ -42,19 +42,30 @@ export default function App() {
     event.preventDefault(); // prevent page refresh
     // Add user message to conversation
     setConversation((prevConversation) => [...prevConversation, { by: 'user', text: userInput }]);
-
+    
     // Convert the conversation array to a string in the required format
     const conversationHistory = conversation.map(message => `${message.by === 'ai' ? 'AI' : 'User'}: ${message.text}`).join('\n');
-
+  
+    // Add a placeholder message from AI
+    setConversation((prevConversation) => [...prevConversation, { by: 'ai', text: '...', typing: true }]);
+  
     try {
       const response = await axios.get(`.netlify/functions/aichat?input=${userInput}&history=${encodeURIComponent(conversationHistory)}`);
     
-      // Check if data exists and add AI message to conversation
+      // Check if data exists and replace placeholder AI message in conversation
       if (response.data && response.data.output) {
         const aiMessage = response.data.output;
-        setConversation((prevConversation) => [...prevConversation, { by: 'ai', text: aiMessage, typing: true }]);
+        setConversation((prevConversation) => {
+          const updatedConversation = [...prevConversation];
+          updatedConversation[updatedConversation.length - 1] = { by: 'ai', text: aiMessage, typing: true };
+          return updatedConversation;
+        });
       } else {
-        setConversation((prevConversation) => [...prevConversation, { by: 'ai', text: 'Oops... Something happened, try again' }]);
+        setConversation((prevConversation) => {
+          const updatedConversation = [...prevConversation];
+          updatedConversation[updatedConversation.length - 1] = { by: 'ai', text: 'Oops... Something happened, try again' };
+          return updatedConversation;
+        });
       }
       // Clear user input
       setUserInput('');
@@ -63,6 +74,7 @@ export default function App() {
       setUserInput('');
     }
   };
+  
 
 
   return (
