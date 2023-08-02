@@ -37,6 +37,7 @@
     -moz-osx-font-smoothing: grayscale;
     text-rendering: optimizeLegibility;
     scroll-behavior: smooth;
+    overscroll-behavior-y: contain;
 }
 
 canvas,
