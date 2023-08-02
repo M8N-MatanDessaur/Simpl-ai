@@ -48,11 +48,11 @@ export default function App() {
 
     try {
       const response = await axios.get(`.netlify/functions/aichat?input=${userInput}&history=${encodeURIComponent(conversationHistory)}`);
-
+    
       // Check if data exists and add AI message to conversation
       if (response.data && response.data.output) {
         const aiMessage = response.data.output;
-        setConversation((prevConversation) => [...prevConversation, { by: 'ai', text: userInput, typing: true }]);
+        setConversation((prevConversation) => [...prevConversation, { by: 'ai', text: aiMessage, typing: true }]);
       } else {
         setConversation((prevConversation) => [...prevConversation, { by: 'ai', text: 'Oops... Something happened, try again' }]);
       }
