@@ -157,6 +157,7 @@ const TypingIndicator = styled.div`
 `;
 
 
+
 const ChatContainer = styled.div`
   position: relative;
   width: 80%;
