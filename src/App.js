@@ -38,6 +38,7 @@ export default function App() {
       setUserInput('');
     } catch (error) {
       console.error("Error:", error);
+      setConversation((prevConversation) => [...prevConversation, { by: 'ai', text: 'Oops... Something happened, try again' }]);
       setUserInput('');
     }
   };
