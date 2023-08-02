@@ -5,14 +5,14 @@ import axios from "axios";
 export default function App() {
   const [userInput, setUserInput] = useState(''); // for storing the user's input
   const [conversation, setConversation] = useState([{ by: 'ai', text: 'Hello, I am an AI chatbot. I am here to help you with your questions. Ask me anything.' }]); // to store the conversation history
-
+  const lastMessageRef = useRef(null);
   // Create a reference to the TextView
   const textViewRef = useRef(null);
 
   // Scroll to the bottom of the TextView every time the conversation changes
   useEffect(() => {
-    if (textViewRef.current) {
-      textViewRef.current.scrollIntoView({ behavior: "smooth", block: "end", inline: "nearest" });
+    if (lastMessageRef.current) {
+      lastMessageRef.current.scrollIntoView({ behavior: "smooth", block: "end", inline: "nearest" });
     }
   }, [conversation]);
 
@@ -42,11 +42,15 @@ export default function App() {
   return (
     <ViewContainer>
       <ChatContainer>
-        <TextView ref={textViewRef}>
-        {conversation.map((message, index) => message.by === 'ai' ? (
-          <AiText key={index}>{message.text}</AiText>
-        ) : (
-          <UserText key={index}>{message.text}</UserText>
+      <TextView>
+        {conversation.map((message, index) => (
+          <MessageRef key={index} ref={index === conversation.length - 1 ? lastMessageRef : null}>
+            {message.by === 'ai' ? (
+              <AiText><p>{message.text}</p></AiText>
+            ) : (
+              <UserText><p>{message.text}</p></UserText>
+            )}
+          </MessageRef>
         ))}
         </TextView>
           <UserInput onSubmit={handleSend}>
@@ -196,6 +200,14 @@ const SendButton = styled.button`
   }
 `;
 
+const MessageRef = styled.div`
+width: 100%	;
+height: max-content;
+display: flex;
+flex-direction: column;
+align-items: center;
+`;
+
 const AiText = styled.div`
   width: max-content;
   max-width: 60%;
@@ -206,9 +218,6 @@ const AiText = styled.div`
   font-size: 1.2rem;
   font-weight: 500;
   outline: none;
-  display: flex;
-  align-items: center;
-  justify-content: center;
   align-self: flex-start;
 `;
 
@@ -222,8 +231,5 @@ max-width: 60%;
   font-size: 1.2rem;
   font-weight: 500;
   outline: none;
-  display: flex;
-  align-items: center;
-  justify-content: center;
   align-self: flex-end;
 `;
