@@ -6,7 +6,8 @@ export default function App() {
   const [userInput, setUserInput] = useState(''); // for storing the user's input
   const [conversation, setConversation] = useState([{ by: 'ai', text: 'Hello, I am an AI chatbot. I am here to help you with your questions. Ask me anything.' }]); // to store the conversation history
 
-  const handleSend = async () => {
+  const handleSend = async (event) => {
+    event.preventDefault(); // prevent page refresh
     // Add user message to conversation
     setConversation((prevConversation) => [...prevConversation, { by: 'user', text: userInput }]);
 
@@ -24,6 +25,7 @@ export default function App() {
       setUserInput('');
     } catch (error) {
       console.error("Error:", error);
+      setUserInput('');
     }
   };
 
@@ -35,18 +37,21 @@ export default function App() {
         ) : (
           <UserText key={index}>{message.text}</UserText>
         ))}
-        <UserInput>
-          <UserInputText value={userInput} onChange={(e) => setUserInput(e.target.value)} />
-          <SendButton onClick={handleSend}>
-            <svg fill="none" strokeLinecap="round" strokeLinejoin="round" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-              <path d="M9.912 12H4L2.023 4.135A.662.662 0 0 1 2 3.995c-.022-.721.772-1.221 1.46-.891L22 12 3.46 20.896c-.68.327-1.464-.159-1.46-.867a.66.66 0 0 1 .033-.186L3.5 15"></path>
-            </svg>
-          </SendButton>
-        </UserInput>
+        <Form onSubmit={handleSend}>
+          <UserInput>
+            <UserInputText value={userInput} onChange={(e) => setUserInput(e.target.value)} />
+            <SendButton type="submit">
+              <svg fill="none" strokeLinecap="round" strokeLinejoin="round" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                <path d="M9.912 12H4L2.023 4.135A.662.662 0 0 1 2 3.995c-.022-.721.772-1.221 1.46-.891L22 12 3.46 20.896c-.68.327-1.464-.159-1.46-.867a.66.66 0 0 1 .033-.186L3.5 15"></path>
+              </svg>
+            </SendButton>
+          </UserInput>
+        </Form>
       </ChatContainer>
     </ViewContainer>
   );
 };
+
 
 const ViewContainer = styled.div`
   width: 100%;
@@ -65,12 +70,38 @@ const ChatContainer = styled.div`
   height: 90%;
   border: 1px solid #FFFFFF30;
   border-radius: 10px;
+  overflow: auto;
+
+  &::-webkit-scrollbar {
+    width: 10px;
+  }
+
+  &::-webkit-scrollbar-track {
+    background: #FFFFFF10;
+    border-radius: 10px;
+  }
+
+  &::-webkit-scrollbar-thumb {
+    background: #FFFFFF30;
+    border-radius: 10px;
+  }
+
+  &::-webkit-scrollbar-thumb:hover {
+    background: #FFFFFF50;
+  }
 
   display: flex;
   flex-direction: column;
   align-items: center;
   gap: 10px;
   padding: 35px;
+`;
+
+const Form = styled.form`
+position: absolute;
+  bottom: 0;
+  width: 100%;
+  height: 100%;
 `;
 
 const UserInput = styled.div`
