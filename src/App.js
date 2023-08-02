@@ -19,7 +19,7 @@ export default function App() {
   const handleSend = async (event) => {
     event.preventDefault(); // prevent page refresh
     // Add user message to conversation
-    setConversation((prevConversation) => [...prevConversation, { by: 'ai', text: userInput, typing: true }]);
+    setConversation((prevConversation) => [...prevConversation, { by: 'user', text: userInput }]);
 
     // Convert the conversation array to a string in the required format
     const conversationHistory = conversation.map(message => `${message.by === 'ai' ? 'AI' : 'User'}: ${message.text}`).join('\n');
