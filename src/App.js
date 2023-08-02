@@ -9,23 +9,6 @@ export default function App() {
   // Create a reference to the TextView
   const textViewRef = useRef(null);
 
-  navigator.virtualKeyboard.onchange = () => {
-    if (textViewRef.current) {
-      textViewRef.current.scrollIntoView({ behavior: "smooth", block: "end", inline: "nearest" });
-    }
-  };
-  navigator.virtualKeyboard.onhide = () => {
-    if (textViewRef.current) {
-      textViewRef.current.scrollIntoView({ behavior: "smooth", block: "end", inline: "nearest" });
-    }
-  };
-  navigator.virtualKeyboard.onshow = () => {
-    if (textViewRef.current) {
-      textViewRef.current.scrollIntoView({ behavior: "smooth", block: "end", inline: "nearest" });
-    }
-  };
-
-
   // Scroll to the bottom of the TextView every time the conversation changes
   useEffect(() => {
     if (lastMessageRef.current) {
@@ -164,6 +147,7 @@ const UserInput = styled.form`
   height: 10%;
   border-top: 1px solid #FFFFFF30;
   padding: 0 10px;
+  margin-bottom: calc(0px - env(keyboard-inset-height));
 
   display: flex;
   flex-direction: row;
