@@ -145,7 +145,7 @@ const UserInput = styled.form`
   position: absolute;
   bottom: 0;
   width: 100%;
-  height: 10%;
+  height: 75px;
   border-top: 1px solid #FFFFFF30;
   padding: 0 10px;
   margin-bottom: calc(0px - env(keyboard-inset-height));
