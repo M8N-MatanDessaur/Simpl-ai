@@ -1,27 +1,41 @@
 const axios = require('axios');
 
+let conversationHistory = [];
+
 exports.handler = async function(event, context) {
   try {
-    const response = await axios.post("https://api.openai.com/v1/engines/text-davinci-003/completions", 
+    // Extract the user's message from the event
+    const userInput = event.queryStringParameters.input;
+    
+    // Add the user's message to the conversation history
+    conversationHistory.push({role: 'user', content: userInput});
+    
+    const response = await axios.post(
+      'https://api.openai.com/v1/engines/text-davinci-003/completions',
       {
-        prompt: `respond to the user input. Return only the response text. The input is ${event.queryStringParameters.input}}`,
-        temperature: 0.7,
+        messages: conversationHistory,
         max_tokens: 1000,
+        temperature: 0.7,
       },
       {
         headers: {
-          "Content-Type": "application/json",
-          "Authorization": `Bearer ${process.env.OPENAI_API_KEY}`,
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${process.env.OPENAI_API_KEY}`,
         },
-      }
+      },
     );
 
     const data = response.data;
 
     if (data && data.choices && data.choices.length > 0) {
+      const aiResponse = data.choices[0].message.content;
+      
+      // Add the AI's response to the conversation history
+      conversationHistory.push({role: 'assistant', content: aiResponse});
+      
       return {
         statusCode: 200,
-        body: JSON.stringify({ output: " "+data.choices[0].text.trim() }),
+        body: JSON.stringify({ output: aiResponse }),
       };
     } else {
       return {
