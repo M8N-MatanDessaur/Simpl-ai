@@ -140,7 +140,7 @@ const TextView = styled.div`
 `;
 
 const UserInput = styled.form`
-  position: absolute;
+  position: fixed;
   bottom: 0;
   width: 100%;
   height: 10%;
