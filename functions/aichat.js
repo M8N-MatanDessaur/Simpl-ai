@@ -10,6 +10,7 @@ exports.handler = async function(event, context) {
       {
         prompt: prompt,
         temperature: 0.7,
+        top_p: 0.9,
         max_tokens: 1000,
       },
       {
