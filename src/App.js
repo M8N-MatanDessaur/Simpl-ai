@@ -11,10 +11,32 @@ export default function App() {
 
   // Scroll to the bottom of the TextView every time the conversation changes
   useEffect(() => {
-    if (lastMessageRef.current) {
-      lastMessageRef.current.scrollIntoView({ behavior: "smooth", block: "end", inline: "nearest" });
+    const lastMessage = conversation[conversation.length - 1];
+    if (lastMessage.by === 'ai' && lastMessage.typing) {
+      let currentText = '';
+      const typingSpeed = 50; // milliseconds per character
+      const text = lastMessage.text;
+
+      const interval = setInterval(() => {
+        if (currentText.length < text.length) {
+          currentText += text[currentText.length];
+          const updatedConversation = [...conversation];
+          updatedConversation[updatedConversation.length - 1].text = currentText;
+          setConversation(updatedConversation);
+        } else {
+          clearInterval(interval);
+          // Mark the message as no longer typing
+          const updatedConversation = [...conversation];
+          updatedConversation[updatedConversation.length - 1].typing = false;
+          setConversation(updatedConversation);
+        }
+      }, typingSpeed);
+
+      // Clean up the interval on unmount
+      return () => clearInterval(interval);
     }
   }, [conversation]);
+
 
   const handleSend = async (event) => {
     event.preventDefault(); // prevent page refresh
@@ -30,7 +52,7 @@ export default function App() {
       // Check if data exists and add AI message to conversation
       if (response.data && response.data.output) {
         const aiMessage = response.data.output;
-        setConversation((prevConversation) => [...prevConversation, { by: 'ai', text: aiMessage }]);
+        setConversation((prevConversation) => [...prevConversation, { by: 'ai', text: userInput, typing: true }]);
       } else {
         setConversation((prevConversation) => [...prevConversation, { by: 'ai', text: 'Oops... Something happened, try again' }]);
       }
@@ -54,9 +76,11 @@ export default function App() {
               ) : (
                 <UserText><p>{message.text}</p></UserText>
               )}
+              {index === conversation.length - 1 && message.typing && <TypingIndicator />}
             </MessageRef>
           ))}
         </TextView>
+
         <UserInput onSubmit={handleSend}>
           <UserInputText
             value={userInput}
@@ -87,6 +111,39 @@ const ViewContainer = styled.div`
 
   background-color: #1c1c1c;
 `;
+
+const TypingIndicator = styled.div`
+  width: 2rem;
+  height: 1rem;
+  display: flex;
+  justify-content: space-around;
+
+  & div {
+    width: 0.5rem;
+    height: 0.5rem;
+    background-color: #FFFFFF;
+    border-radius: 50%;
+    animation: bounce 0.6s infinite alternate;
+
+    &:nth-child(2) {
+      animation-delay: 0.2s;
+    }
+
+    &:nth-child(3) {
+      animation-delay: 0.4s;
+    }
+  }
+
+  @keyframes bounce {
+    0% {
+      transform: translateY(0);
+    }
+    100% {
+      transform: translateY(-5px);
+    }
+  }
+`;
+
 
 const ChatContainer = styled.div`
   position: relative;
