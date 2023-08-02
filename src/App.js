@@ -11,61 +11,28 @@ export default function App() {
 
   // Scroll to the bottom of the TextView every time the conversation changes
   useEffect(() => {
-    const lastMessage = conversation[conversation.length - 1];
-    if (lastMessage.by === 'ai' && lastMessage.typing) {
-      let currentText = '';
-      const typingSpeed = 50; // milliseconds per character
-      const text = lastMessage.text;
-
-      const interval = setInterval(() => {
-        if (currentText.length < text.length) {
-          currentText += text[currentText.length];
-          const updatedConversation = [...conversation];
-          updatedConversation[updatedConversation.length - 1].text = currentText;
-          setConversation(updatedConversation);
-        } else {
-          clearInterval(interval);
-          // Mark the message as no longer typing
-          const updatedConversation = [...conversation];
-          updatedConversation[updatedConversation.length - 1].typing = false;
-          setConversation(updatedConversation);
-        }
-      }, typingSpeed);
-
-      // Clean up the interval on unmount
-      return () => clearInterval(interval);
+    if (lastMessageRef.current) {
+      lastMessageRef.current.scrollIntoView({ behavior: "smooth", block: "end", inline: "nearest" });
     }
   }, [conversation]);
-
 
   const handleSend = async (event) => {
     event.preventDefault(); // prevent page refresh
     // Add user message to conversation
-    setConversation((prevConversation) => [...prevConversation, { by: 'user', text: userInput }]);
-    
+    setConversation((prevConversation) => [...prevConversation, { by: 'ai', text: userInput, typing: true }]);
+
     // Convert the conversation array to a string in the required format
     const conversationHistory = conversation.map(message => `${message.by === 'ai' ? 'AI' : 'User'}: ${message.text}`).join('\n');
-  
-    // Add a placeholder message from AI
-    setConversation((prevConversation) => [...prevConversation, { by: 'ai', text: '...', typing: true }]);
-  
+
     try {
       const response = await axios.get(`.netlify/functions/aichat?input=${userInput}&history=${encodeURIComponent(conversationHistory)}`);
-    
-      // Check if data exists and replace placeholder AI message in conversation
+
+      // Check if data exists and add AI message to conversation
       if (response.data && response.data.output) {
         const aiMessage = response.data.output;
-        setConversation((prevConversation) => {
-          const updatedConversation = [...prevConversation];
-          updatedConversation[updatedConversation.length - 1] = { by: 'ai', text: aiMessage, typing: true };
-          return updatedConversation;
-        });
+        setConversation((prevConversation) => [...prevConversation, { by: 'ai', text: aiMessage }]);
       } else {
-        setConversation((prevConversation) => {
-          const updatedConversation = [...prevConversation];
-          updatedConversation[updatedConversation.length - 1] = { by: 'ai', text: 'Oops... Something happened, try again' };
-          return updatedConversation;
-        });
+        setConversation((prevConversation) => [...prevConversation, { by: 'ai', text: 'Oops... Something happened, try again' }]);
       }
       // Clear user input
       setUserInput('');
@@ -74,7 +41,6 @@ export default function App() {
       setUserInput('');
     }
   };
-  
 
 
   return (
@@ -88,11 +54,9 @@ export default function App() {
               ) : (
                 <UserText><p>{message.text}</p></UserText>
               )}
-              {index === conversation.length - 1 && message.typing && <TypingIndicator />}
             </MessageRef>
           ))}
         </TextView>
-
         <UserInput onSubmit={handleSend}>
           <UserInputText
             value={userInput}
@@ -123,40 +87,6 @@ const ViewContainer = styled.div`
 
   background-color: #1c1c1c;
 `;
-
-const TypingIndicator = styled.div`
-  width: 2rem;
-  height: 1rem;
-  display: flex;
-  justify-content: space-around;
-
-  & div {
-    width: 0.5rem;
-    height: 0.5rem;
-    background-color: #FFFFFF;
-    border-radius: 50%;
-    animation: bounce 0.6s infinite alternate;
-
-    &:nth-child(2) {
-      animation-delay: 0.2s;
-    }
-
-    &:nth-child(3) {
-      animation-delay: 0.4s;
-    }
-  }
-
-  @keyframes bounce {
-    0% {
-      transform: translateY(0);
-    }
-    100% {
-      transform: translateY(-5px);
-    }
-  }
-`;
-
-
 
 const ChatContainer = styled.div`
   position: relative;
