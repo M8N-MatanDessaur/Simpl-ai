@@ -246,8 +246,8 @@ align-items: center;
 `;
 
 const typing = keyframes`
-  from { width: 0 }
-  to { width: 100% }
+  0% { opacity: 0; }
+  100% { opacity: 1; }
 `;
 
 const AiText = styled.div`
@@ -260,16 +260,16 @@ const AiText = styled.div`
   align-self: flex-start;
 
   & p {
-  background-color: #6c41c380;
-  padding: 5px 10px;
-  border-radius: 10px;
-  overflow: hidden;
-  white-space: nowrap; 
-  margin: 0 auto 0 0;
-  animation: 
-    ${typing} 0.5s steps(40, end);
+    background-color: #6c41c380;
+    padding: 5px 10px;
+    border-radius: 10px;
+    opacity: 0;
+    margin: 0 auto 0 0;
+    animation: 
+      ${typing} 2s forwards;
   }
 `;
+
 
 const UserText = styled.div`
 width: max-content;
