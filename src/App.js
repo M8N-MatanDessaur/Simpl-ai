@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from "react";
-import styled, {keyframes} from "styled-components";
+import styled, { keyframes } from "styled-components";
 import axios from "axios";
 import { BeatLoader } from 'react-spinners';
 
@@ -16,7 +16,10 @@ export default function App() {
     const fetchAiIntroduction = async () => {
       setLoading(true);
       try {
-        const response = await axios.get(`.netlify/functions/aichat?input=your name is simpl and you are an ai assistant. Introduce yourself`);
+        const languageNames = new Intl.DisplayNames(['en'], {
+          type: 'language'
+        });
+        const response = await axios.get(`.netlify/functions/aichat?input=your name is simpl ai and you are an ai assistant designed to answer the user's questions. Introduce yourself in 256 characters and in ${languageNames.of(navigator.language)}}`);
         if (response.data && response.data.output) {
           const aiMessage = response.data.output;
           setConversation((prevConversation) => [...prevConversation, { by: 'ai', text: aiMessage }]);
@@ -27,13 +30,13 @@ export default function App() {
       } catch (error) {
         console.error("Error:", error);
         setConversation((prevConversation) => [...prevConversation, { by: 'ai', text: 'Oops... Something happened, try again' }]);
-        setLoading(false); 
+        setLoading(false);
       }
     };
-    
+
     fetchAiIntroduction();
-  }, []); 
-  
+  }, []);
+
 
   // Scroll to the bottom of the TextView every time the conversation changes
   useEffect(() => {
@@ -42,83 +45,83 @@ export default function App() {
     }
   }, [conversation]);
 
- const handleSend = async (event) => {
-  event.preventDefault(); // prevent page refresh
+  const handleSend = async (event) => {
+    event.preventDefault(); // prevent page refresh
 
-  // Check if user input is empty
-  if (userInput.trim() === '') {
-    return; // Exit the function early
-  }
-
-  // Save user input to a temporary variable
-  const userMessage = userInput;
-  // Add user message to conversation
-  setConversation((prevConversation) => [...prevConversation, { by: 'user', text: userMessage }]);
-  // Clear user input
-  setUserInput('');
-  // Convert the conversation array to a string in the required format
-  const conversationHistory = conversation.map(message => `${message.by === 'ai' ? 'AI' : 'User'}: ${message.text}`).join('\n');
-  setLoading(true);
-  try {
-    const response = await axios.get(`.netlify/functions/aichat?input=${userMessage}&history=${encodeURIComponent(conversationHistory)}`);
-    // Check if data exists and add AI message to conversation
-    if (response.data && response.data.output) {
-      const aiMessage = response.data.output;
-      setConversation((prevConversation) => [...prevConversation, { by: 'ai', text: aiMessage }]);
-    } else {
-      setConversation((prevConversation) => [...prevConversation, { by: 'ai', text: 'Oops... Something happened, try again' }]);
+    // Check if user input is empty
+    if (userInput.trim() === '') {
+      return; // Exit the function early
     }
-    setLoading(false);
-  } catch (error) {
-    console.error("Error:", error);
-    setConversation((prevConversation) => [...prevConversation, { by: 'ai', text: 'Oops... Something happened, try again' }]);
-    setLoading(false); 
-  }
-};
 
-  
+    // Save user input to a temporary variable
+    const userMessage = userInput;
+    // Add user message to conversation
+    setConversation((prevConversation) => [...prevConversation, { by: 'user', text: userMessage }]);
+    // Clear user input
+    setUserInput('');
+    // Convert the conversation array to a string in the required format
+    const conversationHistory = conversation.map(message => `${message.by === 'ai' ? 'AI' : 'User'}: ${message.text}`).join('\n');
+    setLoading(true);
+    try {
+      const response = await axios.get(`.netlify/functions/aichat?input=${userMessage}&history=${encodeURIComponent(conversationHistory)}`);
+      // Check if data exists and add AI message to conversation
+      if (response.data && response.data.output) {
+        const aiMessage = response.data.output;
+        setConversation((prevConversation) => [...prevConversation, { by: 'ai', text: aiMessage }]);
+      } else {
+        setConversation((prevConversation) => [...prevConversation, { by: 'ai', text: 'Oops... Something happened, try again' }]);
+      }
+      setLoading(false);
+    } catch (error) {
+      console.error("Error:", error);
+      setConversation((prevConversation) => [...prevConversation, { by: 'ai', text: 'Oops... Something happened, try again' }]);
+      setLoading(false);
+    }
+  };
+
+
   return (
     <ViewContainer>
-    <ChatContainer>
-      <TextView>
-        {conversation.map((message, index) => (
-          <MessageRef key={index} ref={index === conversation.length - 1 ? lastMessageRef : null}>
-            {message.by === 'ai' ? (
-              <AiText>
-                <img src={simpl} alt="simpl" style={{width: '35px', height: '35px', borderRadius: '50%', marginRight: '10px'}} />
-                <p>{message.text}</p>
+      <ChatContainer>
+        <TextView>
+          {conversation.map((message, index) => (
+            <MessageRef key={index} ref={index === conversation.length - 1 ? lastMessageRef : null}>
+              {message.by === 'ai' && message.text ? (
+                <AiText>
+                  <img src={simpl} alt="simpl" style={{ width: '35px', height: '35px', borderRadius: '50%', marginRight: '10px' }} />
+                  <p>{message.text}</p>
                 </AiText>
-            ) : (
-              <UserText><p>{message.text}</p></UserText>
-            )}
-          </MessageRef>
-        ))}
-        {loading && 
-          <BeatLoader 
-            color={"#442f70"} 
-            loading={loading} 
-            size={8} 
+              ) : (
+                message.by === 'user' && <UserText><p>{message.text}</p></UserText>
+              )}
+            </MessageRef>
+          ))}
+          {loading &&
+            <BeatLoader
+              color={"#442f70"}
+              loading={loading}
+              size={8}
+            />
+          }
+        </TextView>
+        <UserInput onSubmit={handleSend}>
+          <UserInputText
+            value={userInput}
+            onChange={(e) => setUserInput(e.target.value)}
+            onFocus={(e) => {
+              const { scrollX, scrollY } = window;
+              e.target.onblur = () => window.scrollTo(scrollX, scrollY);
+            }}
           />
-        }
-      </TextView>
-      <UserInput onSubmit={handleSend}>
-        <UserInputText
-          value={userInput}
-          onChange={(e) => setUserInput(e.target.value)}
-          onFocus={(e) => {
-            const { scrollX, scrollY } = window;
-            e.target.onblur = () => window.scrollTo(scrollX, scrollY);
-          }}
-        />
-        <SendButton type="submit">
-          <svg fill="none" strokeLinecap="round" strokeLinejoin="round" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-            <path d="M9.912 12H4L2.023 4.135A.662.662 0 0 1 2 3.995c-.022-.721.772-1.221 1.46-.891L22 12 3.46 20.896c-.68.327-1.464-.159-1.46-.867a.66.66 0 0 1 .033-.186L3.5 15"></path>
-          </svg>
-        </SendButton>
-      </UserInput>
-    </ChatContainer>
-  </ViewContainer>
-);
+          <SendButton type="submit">
+            <svg fill="none" strokeLinecap="round" strokeLinejoin="round" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+              <path d="M9.912 12H4L2.023 4.135A.662.662 0 0 1 2 3.995c-.022-.721.772-1.221 1.46-.891L22 12 3.46 20.896c-.68.327-1.464-.159-1.46-.867a.66.66 0 0 1 .033-.186L3.5 15"></path>
+            </svg>
+          </SendButton>
+        </UserInput>
+      </ChatContainer>
+    </ViewContainer>
+  );
 }
 
 const ViewContainer = styled.div`
