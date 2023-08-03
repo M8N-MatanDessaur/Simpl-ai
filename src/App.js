@@ -3,6 +3,8 @@ import styled, {keyframes} from "styled-components";
 import axios from "axios";
 import { BeatLoader } from 'react-spinners';
 
+import simpl from "./logo.png";
+
 export default function App() {
   const [userInput, setUserInput] = useState(''); // for storing the user's input
   const [conversation, setConversation] = useState([{ by: 'ai', text: 'Hello, I am an simplAI. I am here to help you with your questions.' }]); // to store the conversation history
@@ -52,7 +54,10 @@ export default function App() {
         {conversation.map((message, index) => (
           <MessageRef key={index} ref={index === conversation.length - 1 ? lastMessageRef : null}>
             {message.by === 'ai' ? (
-              <AiText><p>{message.text}</p></AiText>
+              <AiText>
+                <img src={simpl} alt="simpl" style={{width: '35px', height: '35px', borderRadius: '50%', marginRight: '10px'}} />
+                <p>{message.text}</p>
+                </AiText>
             ) : (
               <UserText><p>{message.text}</p></UserText>
             )}
@@ -258,6 +263,7 @@ const AiText = styled.div`
   font-weight: 500;
   outline: none;
   align-self: flex-start;
+  display: flex;
 
   & p {
     background-color: #6c41c380;
