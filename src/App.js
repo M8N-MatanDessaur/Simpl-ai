@@ -1,11 +1,11 @@
 import React, { useEffect, useRef, useState } from "react";
-import styled from "styled-components";
+import styled, {keyframes} from "styled-components";
 import axios from "axios";
 import { BeatLoader } from 'react-spinners';
 
 export default function App() {
   const [userInput, setUserInput] = useState(''); // for storing the user's input
-  const [conversation, setConversation] = useState([{ by: 'ai', text: 'Hello, I am an simplAI. I am here to help you with your questions. Ask me anything.' }]); // to store the conversation history
+  const [conversation, setConversation] = useState([{ by: 'ai', text: 'Hello, I am an simplAI. I am here to help you with your questions.' }]); // to store the conversation history
   const lastMessageRef = useRef(null);
   const textViewRef = useRef(null);
   const [loading, setLoading] = useState(false);
@@ -245,17 +245,30 @@ flex-direction: column;
 align-items: center;
 `;
 
+const typing = keyframes`
+  from { width: 0 }
+  to { width: 100% }
+`;
+
 const AiText = styled.div`
   width: max-content;
   max-width: 60%;
-  border-radius: 10px;
-  padding: 5px 10px;
-  background-color: #6c41c380;
   color: #FFFFFF;
   font-size: 1.2rem;
   font-weight: 500;
   outline: none;
   align-self: flex-start;
+
+  & p {
+  background-color: #6c41c380;
+  padding: 5px 10px;
+  border-radius: 10px;
+  overflow: hidden;
+  white-space: nowrap; 
+  margin: 0 auto 0 0;
+  animation: 
+    ${typing} 3.5s steps(40, end);
+  }
 `;
 
 const UserText = styled.div`
