@@ -146,7 +146,7 @@ const TextView = styled.div`
   display: flex;
   flex-direction: column;
   align-items: center;
-  padding: 25px;
+  padding-bottom: 25px;
   gap: 10px;
 
   &::-webkit-scrollbar {
