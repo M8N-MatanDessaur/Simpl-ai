@@ -7,10 +7,33 @@ import simpl from "./logo.png";
 
 export default function App() {
   const [userInput, setUserInput] = useState(''); // for storing the user's input
-  const [conversation, setConversation] = useState([{ by: 'ai', text: 'Hello, I am an simplAI. I am here to help you with your questions.' }]); // to store the conversation history
+  const [conversation, setConversation] = useState([{ by: null, text: null }]);
   const lastMessageRef = useRef(null);
   const textViewRef = useRef(null);
   const [loading, setLoading] = useState(false);
+
+  useEffect(() => {
+    const fetchAiIntroduction = async () => {
+      setLoading(true);
+      try {
+        const response = await axios.get(`.netlify/functions/aichat?input=Introduce yourself`);
+        if (response.data && response.data.output) {
+          const aiMessage = response.data.output;
+          setConversation((prevConversation) => [...prevConversation, { by: 'ai', text: aiMessage }]);
+        } else {
+          setConversation((prevConversation) => [...prevConversation, { by: 'ai', text: 'Oops... Something happened, try again' }]);
+        }
+        setLoading(false);
+      } catch (error) {
+        console.error("Error:", error);
+        setConversation((prevConversation) => [...prevConversation, { by: 'ai', text: 'Oops... Something happened, try again' }]);
+        setLoading(false); 
+      }
+    };
+    
+    fetchAiIntroduction();
+  }, []); 
+  
 
   // Scroll to the bottom of the TextView every time the conversation changes
   useEffect(() => {
