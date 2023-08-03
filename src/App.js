@@ -16,7 +16,7 @@ export default function App() {
     const fetchAiIntroduction = async () => {
       setLoading(true);
       try {
-        const response = await axios.get(`.netlify/functions/aichat?input=Introduce yourself`);
+        const response = await axios.get(`.netlify/functions/aichat?input=your name is simpl and you are an ai assistant. Introduce yourself`);
         if (response.data && response.data.output) {
           const aiMessage = response.data.output;
           setConversation((prevConversation) => [...prevConversation, { by: 'ai', text: aiMessage }]);
