@@ -267,7 +267,7 @@ const AiText = styled.div`
   white-space: nowrap; 
   margin: 0 auto 0 0;
   animation: 
-    ${typing} 3.5s steps(40, end);
+    ${typing} 0.5s steps(40, end);
   }
 `;
 
