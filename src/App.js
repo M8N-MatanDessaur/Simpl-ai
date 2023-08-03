@@ -257,7 +257,7 @@ const typing = keyframes`
 
 const AiText = styled.div`
   width: 100%;
-  max-width: 60%;
+  max-width: 80%;
   color: #FFFFFF;
   font-size: 1.2rem;
   font-weight: 500;
@@ -279,7 +279,7 @@ const AiText = styled.div`
 
 const UserText = styled.div`
 width: max-content;
-max-width: 60%;
+max-width: 80%;
   border-radius: 10px;
   padding: 5px 10px;
   background-color: #FFFFFF20;
