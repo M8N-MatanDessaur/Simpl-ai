@@ -127,14 +127,13 @@ const ChatContainer = styled.div`
   flex-direction: column;
   align-items: center;
   gap: 10px;
-  padding: 35px;
 
   @media (max-width: 560px) {
     width: 100%;
     height: 100%;
     border: none;
     border-radius: 0;
-    padding: 25px;
+    padding: 10px;
   }
     
 `;
@@ -146,7 +145,7 @@ const TextView = styled.div`
   display: flex;
   flex-direction: column;
   align-items: center;
-  padding-bottom: 25px;
+  padding: 15px;
   gap: 10px;
 
   &::-webkit-scrollbar {
@@ -172,6 +171,7 @@ const UserInput = styled.form`
   position: static;
   width: 100%;
   height: 60px;
+  margin: 10px;
   padding: 0 10px;
   display: flex;
   flex-direction: row;
