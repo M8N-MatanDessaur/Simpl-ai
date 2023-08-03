@@ -141,23 +141,38 @@ const ChatContainer = styled.div`
 
 const TextView = styled.div`
   width: 100%;
-  height: 90%;
+  height: 100%;
   overflow-y: scroll;
   display: flex;
   flex-direction: column;
   align-items: center;
+  padding: 25px;
   gap: 10px;
+
+  &::-webkit-scrollbar {
+    width: 10px;
+  }
+
+  &::-webkit-scrollbar-track {
+    background: #FFFFFF10;
+    border-radius: 10px;
+  }
+
+  &::-webkit-scrollbar-thumb {
+    background: #FFFFFF30;
+    border-radius: 10px;
+  }
+
+  &::-webkit-scrollbar-thumb:hover {
+    background: #FFFFFF50;
+  }
 `;
 
 const UserInput = styled.form`
-  position: absolute;
-  bottom: 0;
+  position: static;
   width: 100%;
-  height: 75px;
-  border-top: 1px solid #FFFFFF30;
+  height: 60px;
   padding: 0 10px;
-  margin-bottom: calc(0px - env(keyboard-inset-height));
-
   display: flex;
   flex-direction: row;
   align-items: center;
@@ -167,7 +182,7 @@ const UserInput = styled.form`
 
 const UserInputText = styled.input`
   width: 80%;
-  height: 80%;
+  height: inherit;
   border: none;
   border-radius: 12px;
   padding: 0 10px;
@@ -188,7 +203,7 @@ const UserInputText = styled.input`
 
 const SendButton = styled.button`
   width: 20%;
-  height: 80%;
+  height: inherit;
   border: none;
   border-radius: 12px;
   background-color: #FFFFFF20;

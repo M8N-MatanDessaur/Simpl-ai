@@ -10,11 +10,6 @@
     margin: 0;
     text-size-adjust: none;
     -webkit-text-size-adjust: none;
-    user-select: none;
-    -webkit-user-select: none;
-    -khtml-user-select: none;
-    -moz-user-select: none;
-    -ms-user-select: none;
     -webkit-tap-highlight-color: transparent;
     -webkit-touch-callout: none;
 
@@ -38,6 +33,16 @@
     text-rendering: optimizeLegibility;
     scroll-behavior: smooth;
     overscroll-behavior-y: contain;
+}
+
+body {
+    position: relative;
+    overflow-x: hidden;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+    -webkit-tap-highlight-color: transparent;
+    -webkit-touch-callout: none;
+    -webkit-text-size-adjust: none;
 }
 
 canvas,
@@ -74,12 +79,12 @@ a{
 }
 
 ::selection {
-    background: #00000010;
+    background: #a594caac;
     color: currentColor
 }
 
 ::-moz-selection {
-    background: #00000010;
+    background: #a594caac;
     color: currentColor
 }
 
@@ -89,15 +94,3 @@ a{
     background: transparent
 }
 
-/* MAPBOX TITLE HIDE */
-.mapboxgl-ctrl-logo,
-.fp-watermark {
-    display: none !important;
-}
-
-
-@media (max-width:768px) {
-    html {
-        font-size: 14px
-    }
-}
