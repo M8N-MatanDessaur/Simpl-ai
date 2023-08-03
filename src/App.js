@@ -19,7 +19,7 @@ export default function App() {
         const languageNames = new Intl.DisplayNames(['en'], {
           type: 'language'
         });
-        const response = await axios.get(`.netlify/functions/aichat?input=your name is simpl ai and you are an ai assistant designed to answer the user's questions. Introduce yourself in 256 characters and in ${languageNames.of(navigator.language)}}`);
+        const response = await axios.get(`.netlify/functions/aichat?input=your name is simpl ai and you are an ai assistant designed to answer the user's questions. Introduce yourself in 128 characters max and in ${languageNames.of(navigator.language)}}`);
         if (response.data && response.data.output) {
           const aiMessage = response.data.output;
           setConversation((prevConversation) => [...prevConversation, { by: 'ai', text: aiMessage }]);
