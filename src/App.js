@@ -251,7 +251,7 @@ const typing = keyframes`
 `;
 
 const AiText = styled.div`
-  width: max-content;
+  width: 100%;
   max-width: 60%;
   color: #FFFFFF;
   font-size: 1.2rem;
