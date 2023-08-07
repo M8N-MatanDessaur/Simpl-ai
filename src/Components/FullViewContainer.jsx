@@ -10,9 +10,10 @@ const Container = styled.div`
     height: 100dvh;
     padding: 35px;
     display: flex;
-    flex-direction: column;
+    flex-direction: row;
     align-items: center;
     justify-content: center;
+    gap: 20px;
     overflow: hidden;
     background-color: ${(props) => props.bgColor};
 

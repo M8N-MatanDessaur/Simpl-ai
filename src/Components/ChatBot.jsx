@@ -90,7 +90,8 @@ const ChatContainer = styled.div`
   position: relative;
   width: 100%;
   height: 100%;
-  border: 1px solid #FFFFFF30;
+  border: 2px solid #d331e0;
+  box-shadow: 0 0 50px #d331e080;
   border-radius: 10px;
   padding: 5px;
 
@@ -101,6 +102,7 @@ const ChatContainer = styled.div`
 
   @media (max-width: 480px) {
     border-radius: 0;
+    box-shadow: none;
     border: none;
   }
  
