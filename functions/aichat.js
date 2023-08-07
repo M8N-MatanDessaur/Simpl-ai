@@ -13,7 +13,7 @@ exports.handler = async function(event, context) {
 
     // Prepare messages for the API call
     const messages = [
-      { "role": "system", "content": "your name is "simpl" (s,i,m,p,l) and you are an ai assistant designed to answer the user\'s questions." },
+      { "role": "system", "content": "your name is simpl (s,i,m,p,l) and you are an ai assistant designed to answer the user\'s questions." },
       { "role": "user", "content": conversationHistory },
       { "role": "user", "content": userInput }
     ];
