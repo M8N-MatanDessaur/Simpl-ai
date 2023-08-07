@@ -13,7 +13,7 @@ export default function ChatBot() {
 
     useEffect(() => {
         fetchAiData(`your name is "simpl" (s,i,m,p,l) and you are an ai assistant designed to answer the user's questions. Introduce yourself in 128 characters max`);
-    }, []);
+    }, [fetchAiData]);
 
     useEffect(() => {
         if (lastMessageRef.current) {
