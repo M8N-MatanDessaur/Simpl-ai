@@ -94,6 +94,7 @@ const ChatContainer = styled.div`
   box-shadow: 0 0 50px #d331e080;
   border-radius: 10px;
   padding: 5px;
+  overflow: hidden;
 
   display: flex;
   flex-direction: column;
