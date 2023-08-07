@@ -23,7 +23,6 @@ exports.handler = async function(event, context) {
       model: "gpt-3.5-turbo",
       messages: messages,
       temperature: 0.6,
-      stream: true,
     });
 
     if (completion && completion.data && completion.data.choices && completion.data.choices.length > 0) {
