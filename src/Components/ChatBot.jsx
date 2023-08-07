@@ -5,86 +5,77 @@ import { BeatLoader } from 'react-spinners';
 
 import simpl from "../logo.png";
 
+// Functional Component
 export default function ChatBot() {
-    const [userInput, setUserInput] = useState('');
-    const [conversation, setConversation] = useState([{ by: null, text: null }]);
-    const lastMessageRef = useRef(null);
-    const [loading, setLoading] = useState(false);
+  const [userInput, setUserInput] = useState('');
+  const [conversation, setConversation] = useState([{ by: null, text: null }]);
+  const lastMessageRef = useRef(null);
+  const [loading, setLoading] = useState(false);
 
-    useEffect(() => {
-        fetchAiData(`your name is "simpl" (s,i,m,p,l) and you are an ai assistant designed to answer the user's questions. Introduce yourself in 128 characters max`);
-    }, [fetchAiData]);
+  useEffect(() => {
+    const introduction = 'your name is "simpl" (s,i,m,p,l) and you are an ai assistant designed to answer the user\'s questions. Introduce yourself in 128 characters max';
+    fetchAiData(introduction);
+  }, []);
 
-    useEffect(() => {
-        if (lastMessageRef.current) {
-            lastMessageRef.current.scrollIntoView({ behavior: "smooth", block: "end", inline: "nearest" });
-        }
-    }, [conversation]);
+  useEffect(() => {
+    if (lastMessageRef.current) {
+      lastMessageRef.current.scrollIntoView({ behavior: "smooth", block: "end", inline: "nearest" });
+    }
+  }, [conversation]);
 
-    const fetchAiData = async (inputData, historyData) => {
-        setLoading(true);
-        try {
-            const endpoint = `.netlify/functions/aichat?input=${inputData}${historyData ? `&history=${encodeURIComponent(historyData)}` : ''}`;
-            const response = await axios.get(endpoint);
+  const fetchAiData = async (inputData, historyData) => {
+    setLoading(true);
 
-            if (response.data && response.data.output) {
-                addMessageToConversation('ai', response.data.output);
-            } else {
-                addMessageToConversation('ai', 'Oh oh... Something happened, try again');
-            }
-        } catch (error) {
-            console.error("Error:", error);
-            addMessageToConversation('ai', error.message);
-        } finally {
-            setLoading(false);
-        }
-    };
+    const endpoint = `.netlify/functions/aichat?input=${inputData}${historyData ? `&history=${encodeURIComponent(historyData)}` : ''}`;
 
-    const addMessageToConversation = (by, text) => {
-        setConversation((prevConversation) => [...prevConversation, { by, text }]);
-    };
+    try {
+      const { data } = await axios.get(endpoint);
+      const message = data && data.output ? data.output : 'Oh oh... Something happened, try again';
+      addMessageToConversation('ai', message);
+    } catch (error) {
+      console.error("Error:", error);
+      addMessageToConversation('ai', error.message);
+    } finally {
+      setLoading(false);
+    }
+  };
 
-    const handleSend = (event) => {
-        event.preventDefault();
-        if (userInput.trim() === '') return;
+  const addMessageToConversation = (by, text) => {
+    setConversation(prevConversation => [...prevConversation, { by, text }]);
+  };
 
-        addMessageToConversation('user', userInput);
-        const conversationHistory = conversation.map(message => `${message.by === 'ai' ? 'AI' : 'User'}: ${message.text}`).join('\n');
-        fetchAiData(userInput, conversationHistory);
-        setUserInput('');
-    };
+  const handleSend = (event) => {
+    event.preventDefault();
+    if (!userInput.trim()) return;
 
-    return (
-        <ChatContainer>
-            <TextView>
-                {conversation.map((message, index) => (
-                    <MessageRef key={`${message.by}-${index}`} ref={index === conversation.length - 1 ? lastMessageRef : null}>
-                        {message.by === 'ai' && message.text && (
-                            <AiText>
-                                <img src={simpl} alt="simpl" style={{ width: '35px', height: '35px', border:"2px solid #f135ff", borderRadius: '50%', marginRight: '10px' }} />
-                                <p>{message.text}</p>
-                            </AiText>
-                        )}
-                        {message.by === 'user' && <UserText><p>{message.text}</p></UserText>}
-                    </MessageRef>
-                ))}
-                {loading && <BeatLoader color={"#442f70"} loading={loading} size={8} />}
-            </TextView>
-            <UserInput onSubmit={handleSend}>
-                <UserInputText value={userInput} onChange={(e) => setUserInput(e.target.value)} />
-                <SendButton type="submit">
-                    <SendIcon />
-                </SendButton>
-            </UserInput>
-        </ChatContainer>
-    );
+    addMessageToConversation('user', userInput);
+    const conversationHistory = conversation.map(message => `${message.by === 'ai' ? 'AI' : 'User'}: ${message.text}`).join('\n');
+    fetchAiData(userInput, conversationHistory);
+    setUserInput('');
+  };
+
+  return (
+    <ChatContainer>
+      <TextView>
+        {conversation.map((message, index) => (
+          <MessageRef key={`${message.by}-${index}`} ref={index === conversation.length - 1 ? lastMessageRef : null}>
+            {message.by === 'ai' && message.text && <AiText><SimplImg src={simpl} alt="simpl" /><p>{message.text}</p></AiText>}
+            {message.by === 'user' && <UserText><p>{message.text}</p></UserText>}
+          </MessageRef>
+        ))}
+        {loading && <BeatLoader color={"#442f70"} loading={loading} size={8} />}
+      </TextView>
+      <UserInput onSubmit={handleSend}>
+        <UserInputText value={userInput} onChange={e => setUserInput(e.target.value)} />
+        <SendButton type="submit">
+          <svg fill="none" stroke="#FFFFFFF0" height="100%" width="100%" strokeLinecap="round" strokeLinejoin="round" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+            <path d="M9.912 12H4L2.023 4.135A.662.662 0 0 1 2 3.995c-.022-.721.772-1.221 1.46-.891L22 12 3.46 20.896c-.68.327-1.464-.159-1.46-.867a.66.66 0 0 1 .033-.186L3.5 15"></path>
+          </svg>
+        </SendButton>
+      </UserInput>
+    </ChatContainer>
+  );
 }
-
-const SendIcon = () => (
-    <svg fill="none" stroke="#FFFFFFF0" height="100%" width="100%" strokeLinecap="round" strokeLinejoin="round" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-        <path d="M9.912 12H4L2.023 4.135A.662.662 0 0 1 2 3.995c-.022-.721.772-1.221 1.46-.891L22 12 3.46 20.896c-.68.327-1.464-.159-1.46-.867a.66.66 0 0 1 .033-.186L3.5 15"></path>
-    </svg>
-);
 
 const ChatContainer = styled.div`
   position: relative;
@@ -235,6 +226,13 @@ const AiText = styled.div`
     animation: 
       ${typing} 2s forwards;
   }
+`;
+
+const SimplImg = styled.img`
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  margin-right: 10px;
 `;
 
 
