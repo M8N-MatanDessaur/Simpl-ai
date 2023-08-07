@@ -30,11 +30,11 @@ export default function ChatBot() {
 
     try {
       const { data } = await axios.get(endpoint);
-      const message = data && data.output ? data.output : 'Oh oh... Something happened, try again';
+      const message = data && data.output ? data.output : '🫢 Something happened, try again';
       addMessageToConversation('ai', message);
     } catch (error) {
       console.error("Error:", error);
-      addMessageToConversation('ai', error.message);
+      addMessageToConversation('ai', "🫢 Something happened, try again");
     } finally {
       setLoading(false);
     }
@@ -233,6 +233,7 @@ const SimplImg = styled.img`
   height: 30px;
   border-radius: 50%;
   margin-right: 10px;
+  border: 2px solid #d331e0;
 `;
 
 
