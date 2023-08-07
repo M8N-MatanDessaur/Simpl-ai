@@ -1,32 +1,33 @@
-const axios = require('axios');
+const { Configuration, OpenAIApi } = require("openai");
+
+const configuration = new Configuration({
+  apiKey: process.env.OPENAI_API_KEY,
+});
+const openai = new OpenAIApi(configuration);
 
 exports.handler = async function(event, context) {
   try {
-    const conversationHistory = event.queryStringParameters.history; // get conversation history from request parameters
-    const userInput = event.queryStringParameters.input; // get user input from request parameters";
-    const prompt = `${conversationHistory}\nUser: ${userInput}\nAI:`; // format the prompt including conversation history and user input
+    // Extract conversation history and user input from request parameters
+    const conversationHistory = event.queryStringParameters.history || "";
+    const userInput = event.queryStringParameters.input;
 
-    const response = await axios.post("https://api.openai.com/v1/engines/text-davinci-003/completions", 
-      {
-        prompt: prompt,
-        temperature: 0.7,
-        top_p: 0.9,
-        max_tokens: 1000,
-      },
-      {
-        headers: {
-          "Content-Type": "application/json",
-          "Authorization": `Bearer ${process.env.OPENAI_API_KEY}`,
-        },
-      }
-    );
+    // Prepare messages for the API call
+    const messages = [
+      { "role": "system", "content": "You are a helpful assistant." },
+      { "role": "user", "content": conversationHistory },
+      { "role": "user", "content": userInput }
+    ];
 
-    const data = response.data;
+    // Call OpenAI's createChatCompletion
+    const completion = await openai.createChatCompletion({
+      model: "gpt-3.5-turbo",
+      messages: messages,
+    });
 
-    if (data && data.choices && data.choices.length > 0) {
+    if (completion && completion.data && completion.data.choices && completion.data.choices.length > 0) {
       return {
         statusCode: 200,
-        body: JSON.stringify({ output: " "+data.choices[0].text.trim() }),
+        body: JSON.stringify({ output: " " + completion.data.choices[0].message.content.trim() }),
       };
     } else {
       return {
