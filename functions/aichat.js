@@ -31,12 +31,14 @@ exports.handler = async function(event, context) {
         body: JSON.stringify({ output: " " + completion.data.choices[0].message.content.trim() }),
       };
     } else {
+      console.error("Unexpected completion response:", completion);
       return {
         statusCode: 200,
         body: JSON.stringify({ output: `Oh oh ... Something happened, try again` }),
       };
     }
   } catch (error) {
+    console.error("Error:", error);
     return {
       statusCode: 500,
       body: JSON.stringify({ error: "An error occurred" }),
